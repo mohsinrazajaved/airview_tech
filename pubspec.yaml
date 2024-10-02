@@ -1,0 +1,55 @@
+name: airview_tech
+description: A new Flutter project.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  firebase_core:
+  firebase_auth:
+  firebase_storage:
+  cloud_firestore:
+  font_awesome_flutter:
+  image_picker:
+  cached_network_image:
+  image:
+  photo_view:
+  flutter_datetime_picker:
+  intl:
+  modal_progress_hud_nsn:
+  url_launcher:
+  shared_preferences:
+  webview_flutter:
+  carousel_slider:
+  flutter_holo_date_picker:
+  flutter_localization:
+  google_mobile_ads:
+  cupertino_icons: ^1.0.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^2.0.0
+
+flutter:
+
+  uses-material-design: true
+
+  assets:
+   - assets/logos/facebook.jpg
+   - assets/logos/google.jpg
+   - assets/logos/sfinal.png
+   - assets/logos/terms.png
+   - assets/no_image.png 
+   - assets/locales/
+
+
+  fonts:
+    - family: OpenSans
+      fonts:
+        - asset: assets/fonts/OpenSans.ttf
