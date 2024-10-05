@@ -65,7 +65,9 @@ class FirebaseProvider {
     //User? user;
     try {
       //user = userCredential.user;
-      return null;
+      final response = await _auth.signInWithEmailAndPassword(
+          email: email, password: password);
+      return response.user != null ? null : "";
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
         case "ERROR_EMAIL_ALREADY_IN_USE":

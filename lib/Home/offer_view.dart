@@ -21,7 +21,6 @@ class OfferViewState extends State<OfferView>
     with AutomaticKeepAliveClientMixin<OfferView> {
   final key = GlobalKey<ScaffoldState>();
   bool saving = false;
-  final Key mapKey = UniqueKey();
   final _repository = Repository();
   Future<List<DocumentSnapshot>>? _future;
   AppUser? _user;
@@ -30,10 +29,10 @@ class OfferViewState extends State<OfferView>
   List<String?> cities = [];
   String? selectedCity;
 
-  List<String?> country = [];
+  List<String?> countries = [];
   String? selectedCountry;
 
-  List<String?> type = [];
+  List<String?> types = [];
   String? selectedType;
 
   @override
@@ -59,236 +58,141 @@ class OfferViewState extends State<OfferView>
     return Scaffold(
       key: key,
       appBar: AppBar(
-        title: const Text("Offer"),
+        title: const Text("Offers"),
         elevation: 1,
         backgroundColor: const Color(0xFF73AEF5),
-        automaticallyImplyLeading: false,
       ),
       body: ModalProgressHUD(
         inAsyncCall: saving,
         child: AnnotatedRegion<SystemUiOverlayStyle>(
           value: SystemUiOverlayStyle.light,
-          child: Column(
-            children: [
-              Expanded(
-                child: _buildLoaded(),
-              )
-            ],
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  _buildFilters(),
+                  Expanded(child: _buildTicketList()),
+                ],
+              ),
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildLoaded() {
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(4.0),
-        child: ticketsWidget(),
-      ),
-    );
-  }
-
-  Widget ticketsWidget() {
-    return FutureBuilder(
-      future: _future,
-      builder: ((context, AsyncSnapshot<List<DocumentSnapshot>> snapshot) {
-        List<Ticket?> offers = [];
-        if (snapshot.hasData) {
-          offers = snapshot.data
-                  ?.map(
-                      (e) => Ticket.fromJson(e.data() as Map<String, dynamic>))
-                  .toList() ??
-              [];
-          cities = (offers.map((e) => e?.city).toSet().toList());
-          country = offers.map((e) => e?.country).toSet().toList();
-
-          type = offers.map((e) => e?.type).toSet().toList();
-
-          if (selectedCity != null) {
-            offers = offers.where((e) => e?.city == selectedCity).toList();
-          }
-          if (selectedCountry != null) {
-            offers =
-                offers.where((e) => e?.country == selectedCountry).toList();
-          }
-
-          if (selectedType != null) {
-            offers = offers.where((e) => e?.type == selectedType).toList();
-          }
-
-          offers.sort((a, b) => (a?.time?.millisecondsSinceEpoch ?? 0)
-              .compareTo(b?.time?.millisecondsSinceEpoch ?? 0));
-
-          offers.sort((a, b) => (a?.time?.millisecondsSinceEpoch ?? 0)
-              .compareTo(b?.time?.millisecondsSinceEpoch ?? 0));
-
-          if (snapshot.connectionState == ConnectionState.done) {
-            return Column(
-              children: [
-                _header(),
-                Expanded(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    itemCount: offers.length,
-                    itemBuilder: ((context, index) {
-                      return GestureDetector(
-                        onTap: () {
-                          // DocumentSnapshot? documentSnapshot = snapshot.data
-                          //     ?.firstWhere((data) =>
-                          //         (data.data()
-                          //             as Map<String, dynamic>)['postid'] ==
-                          //         offers[index]?.ticketid);
-                          if (currentUser == null) {
-                            Widgets.showInSnackBar("Please Signup/Login", key);
-                          } else {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: ((context) => OfferDetail(
-                                      ticket: offers[index]!,
-                                    )),
-                              ),
-                            );
-                          }
-                        },
-                        child: OfferItem(
-                          ticket: offers[index]!,
-                        ),
-                      );
-                    }),
-                  ),
-                ),
-              ],
-            );
-          } else if (snapshot.hasError) {
-            return const Center(
-              child: Text('No Tickets Found'),
-            );
-          }
-        } else {
-          return const Center(child: CircularProgressIndicator());
-        }
-        return const Center(
-          child: Text(''),
-        );
-      }),
-    );
-  }
-
-  Row _header() {
+  Widget _buildFilters() {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                const Text(
-                  "Type: ",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                ),
-                Expanded(
-                  child: DropdownButton<String>(
-                    value: selectedType,
-                    isExpanded: true,
-                    items: type.map((String? value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(
-                          value ?? "",
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.w400, fontSize: 15),
-                        ),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        selectedType = value;
-                      });
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                const Text(
-                  "Country: ",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                ),
-                Expanded(
-                  child: DropdownButton<String>(
-                    value: selectedCountry,
-                    isExpanded: true,
-                    items: country.map((String? value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(
-                          value ?? "",
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.w400, fontSize: 15),
-                        ),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        selectedCountry = value;
-                      });
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                const Text(
-                  "City: ",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                ),
-                Expanded(
-                  child: DropdownButton<String>(
-                    value: selectedCity,
-                    isExpanded: true,
-                    items: cities.map((String? value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(
-                          value ?? "",
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.w400, fontSize: 15),
-                        ),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        selectedCity = value;
-                      });
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
+        _buildDropdown("Type", types, selectedType, (value) {
+          setState(() {
+            selectedType = value;
+          });
+        }),
+        _buildDropdown("Country", countries, selectedCountry, (value) {
+          setState(() {
+            selectedCountry = value;
+          });
+        }),
+        _buildDropdown("City", cities, selectedCity, (value) {
+          setState(() {
+            selectedCity = value;
+          });
+        }),
       ],
     );
   }
 
+  Widget _buildDropdown(String label, List<String?> items,
+      String? selectedValue, ValueChanged<String?> onChanged) {
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(label,
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            DropdownButton<String>(
+              value: selectedValue,
+              isExpanded: true,
+              hint: Text("Select $label"),
+              items: items.map((String? value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(
+                    value ?? "",
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.w400, fontSize: 15),
+                  ),
+                );
+              }).toList(),
+              onChanged: onChanged,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTicketList() {
+    return FutureBuilder(
+      future: _future,
+      builder: (context, AsyncSnapshot<List<DocumentSnapshot>> snapshot) {
+        List<Ticket?> offers = [];
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError || snapshot.data == null) {
+          return const Center(child: Text('No Tickets Found'));
+        }
+
+        offers = snapshot.data!
+            .map((e) => Ticket.fromJson(e.data() as Map<String, dynamic>))
+            .toList();
+
+        // Filter logic
+        if (selectedCity != null) {
+          offers = offers.where((e) => e?.city == selectedCity).toList();
+        }
+        if (selectedCountry != null) {
+          offers = offers.where((e) => e?.country == selectedCountry).toList();
+        }
+        if (selectedType != null) {
+          offers = offers.where((e) => e?.type == selectedType).toList();
+        }
+
+        offers.sort((a, b) => (a?.time?.millisecondsSinceEpoch ?? 0)
+            .compareTo(b?.time?.millisecondsSinceEpoch ?? 0));
+
+        return ListView.builder(
+          itemCount: offers.length,
+          itemBuilder: (context, index) {
+            return GestureDetector(
+              onTap: () {
+                if (currentUser == null) {
+                  Widgets.showInSnackBar("Please Signup/Login", key);
+                } else {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => OfferDetail(ticket: offers[index]!),
+                    ),
+                  );
+                }
+              },
+              child: OfferItem(ticket: offers[index]!),
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
-  bool get wantKeepAlive => false;
+  bool get wantKeepAlive => true;
 }

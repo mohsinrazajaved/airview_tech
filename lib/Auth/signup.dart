@@ -249,11 +249,13 @@ class _SignupState extends State<Signup> {
     repository.authenticateUser(user).then((value) {
       if (value) {
         repository
-            .addUserToDb(user,
-                name: usernameController.text,
-                city: cityController.text,
-                country: countryController.text,
-                phonenumber: phoneNumberController.text)
+            .addUserToDb(
+          user,
+          name: usernameController.text,
+          city: cityController.text,
+          country: countryController.text,
+          phonenumber: phoneNumberController.text,
+        )
             .then((value) async {
           setState(() {
             _saving = false;

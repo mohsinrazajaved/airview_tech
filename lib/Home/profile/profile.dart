@@ -1,6 +1,9 @@
 import 'package:airview_tech/Auth/login.dart';
+import 'package:airview_tech/Home/offer_detail.dart';
+import 'package:airview_tech/Home/offer_item.dart';
 import 'package:airview_tech/Home/profile/profile_edit.dart';
 import 'package:airview_tech/models/app_user.dart';
+import 'package:airview_tech/models/ticket.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -149,56 +152,34 @@ class ProfileState extends State<Profile>
       builder: ((context, AsyncSnapshot<List<DocumentSnapshot>> snapshot) {
         if (snapshot.hasData) {
           if (snapshot.connectionState == ConnectionState.done) {
+            final tickets = snapshot.data
+                    ?.map((e) =>
+                        Ticket.fromJson(e.data() as Map<String, dynamic>))
+                    .toList() ??
+                [];
             return GridView.builder(
               shrinkWrap: true,
               physics: const ScrollPhysics(),
               itemCount: snapshot.data?.length,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3, crossAxisSpacing: 0, mainAxisSpacing: 0),
+                  crossAxisCount: 1, crossAxisSpacing: 0, mainAxisSpacing: 0),
               itemBuilder: ((context, index) {
                 return GestureDetector(
-                  child: const Padding(
-                    padding: EdgeInsets.only(left: 5.0, right: 5.0),
-                    child: Stack(
-                      children: [
-                        // CachedNetworkImage(
-                        //   imageUrl: (snapshot.data?[index].data()['imagesUrls']
-                        //               as List<dynamic>)
-                        //           .first ??
-                        //       "",
-                        //   placeholder: ((context, s) => const Center(
-                        //         child: CircularProgressIndicator(),
-                        //       )),
-                        //   width: 125.0,
-                        //   height: 125.0,
-                        //   fit: BoxFit.cover,
-                        // ),
-                        // Visibility(
-                        //   visible:
-                        //       (snapshot.data?[index].data()['type'] == "Video"),
-                        //   child: const Center(
-                        //     child: Icon(
-                        //       Icons.play_circle_fill_sharp,
-                        //       size: 30,
-                        //       color: Color(0xFF73AEF5),
-                        //     ),
-                        //   ),
-                        // ),
-                      ],
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 5.0, right: 5.0),
+                    child: OfferItem(
+                      ticket: tickets[index],
                     ),
                   ),
                   onTap: () {
-                    // Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //         builder: ((context) => PostDetailScreen(
-                    //               user: _user,
-                    //               currentuser: _user,
-                    //               documentSnapshot: snapshot.data[index],
-                    //               onUpdate: () {
-                    //                 retrieveUserDetails();
-                    //               },
-                    //             ))));
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: ((context) => OfferDetail(
+                              ticket: tickets[index],
+                            )),
+                      ),
+                    );
                   },
                 );
               }),

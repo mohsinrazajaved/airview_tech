@@ -216,6 +216,7 @@ class PublishOfferState extends State<PublishOffer>
           buildTF("City", cityController),
           buildTF("Country", countryController),
           buildTF("Price", priceController),
+          buildTF("No of Tickets", numberOfTicketsController),
           buildDatePicker("Go Date", godateString, () async {
             final DateTime? picked = await showDatePicker(
               context: context,

@@ -16,6 +16,7 @@ class Ticket {
   String? dateTime;
   String? ownerName;
   String? ownerPhotoUrl;
+  int? noOfTickets;
   DateTime? time;
 
   Ticket({
@@ -34,6 +35,7 @@ class Ticket {
     this.goDate,
     this.returnDate,
     this.ownerPhotoUrl,
+    this.noOfTickets,
   });
 
   Map<String, dynamic> toJson(Ticket ticket) {
@@ -53,6 +55,7 @@ class Ticket {
     data['departure'] = ticket.departure;
     data['goDate'] = ticket.goDate;
     data['returnDate'] = ticket.returnDate;
+    data['noOfTickets'] = ticket.noOfTickets;
 
     return data;
   }
@@ -73,5 +76,6 @@ class Ticket {
     departure = mapData['departure'];
     goDate = mapData['goDate'];
     returnDate = mapData['returnDate'];
+    noOfTickets = mapData['noOfTickets'];
   }
 }
