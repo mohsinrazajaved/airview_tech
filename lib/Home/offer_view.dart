@@ -1,4 +1,5 @@
 import 'package:airview_tech/Home/offer_detail.dart';
+import 'package:airview_tech/Home/offer_filter.dart';
 import 'package:airview_tech/Home/offer_item.dart';
 import 'package:airview_tech/Network/repository.dart';
 import 'package:airview_tech/Utilities/widgets.dart';
@@ -27,13 +28,14 @@ class OfferViewState extends State<OfferView>
   User? currentUser;
 
   List<String?> cities = [];
-  String? selectedCity;
-
   List<String?> countries = [];
-  String? selectedCountry;
-
   List<String?> types = [];
+  List<Ticket?> offers = [];
+
+  String? selectedCountry;
+  String? selectedCity;
   String? selectedType;
+  DateTime? selectedDate;
 
   @override
   void initState() {
@@ -58,9 +60,36 @@ class OfferViewState extends State<OfferView>
     return Scaffold(
       key: key,
       appBar: AppBar(
-        title: const Text("Offers"),
+        title: const Text("Tickets",
+            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
         elevation: 1,
+        centerTitle: true,
+        foregroundColor: Colors.white,
         backgroundColor: const Color(0xFF73AEF5),
+        actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => FilterScreen(
+                        countries:
+                            offers.map((e) => e?.country).toSet().toList(),
+                        types: offers.map((e) => e?.type).toSet().toList(),
+                        cities: offers.map((e) => e?.city).toSet().toList(),
+                        callback: (country, city, type, data) {
+                          setState(() {
+                            selectedCountry = country;
+                            selectedCity = city;
+                            selectedType = type;
+                            selectedDate = data;
+                          });
+                        }),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.filter_alt))
+        ],
       ),
       body: ModalProgressHUD(
         inAsyncCall: saving,
@@ -71,7 +100,6 @@ class OfferViewState extends State<OfferView>
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 children: [
-                  _buildFilters(),
                   Expanded(child: _buildTicketList()),
                 ],
               ),
@@ -82,68 +110,10 @@ class OfferViewState extends State<OfferView>
     );
   }
 
-  Widget _buildFilters() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        _buildDropdown("Type", types, selectedType, (value) {
-          setState(() {
-            selectedType = value;
-          });
-        }),
-        _buildDropdown("Country", countries, selectedCountry, (value) {
-          setState(() {
-            selectedCountry = value;
-          });
-        }),
-        _buildDropdown("City", cities, selectedCity, (value) {
-          setState(() {
-            selectedCity = value;
-          });
-        }),
-      ],
-    );
-  }
-
-  Widget _buildDropdown(String label, List<String?> items,
-      String? selectedValue, ValueChanged<String?> onChanged) {
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(label,
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-            DropdownButton<String>(
-              value: selectedValue,
-              isExpanded: true,
-              hint: Text("Select $label"),
-              items: items.map((String? value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(
-                    value ?? "",
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.w400, fontSize: 15),
-                  ),
-                );
-              }).toList(),
-              onChanged: onChanged,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildTicketList() {
     return FutureBuilder(
       future: _future,
       builder: (context, AsyncSnapshot<List<DocumentSnapshot>> snapshot) {
-        List<Ticket?> offers = [];
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
@@ -155,7 +125,9 @@ class OfferViewState extends State<OfferView>
             .map((e) => Ticket.fromJson(e.data() as Map<String, dynamic>))
             .toList();
 
-        // Filter logic
+        offers.sort((a, b) => (a?.time?.millisecondsSinceEpoch ?? 0)
+            .compareTo(b?.time?.millisecondsSinceEpoch ?? 0));
+
         if (selectedCity != null) {
           offers = offers.where((e) => e?.city == selectedCity).toList();
         }
@@ -165,9 +137,15 @@ class OfferViewState extends State<OfferView>
         if (selectedType != null) {
           offers = offers.where((e) => e?.type == selectedType).toList();
         }
+        if (selectedDate != null) {
+          offers = offers.where((e) {
+            return e?.time != null && isSameDay(e?.time, selectedDate);
+          }).toList();
+        }
 
-        offers.sort((a, b) => (a?.time?.millisecondsSinceEpoch ?? 0)
-            .compareTo(b?.time?.millisecondsSinceEpoch ?? 0));
+        if (offers.isEmpty) {
+          return const Center(child: Text('No Tickets Found'));
+        }
 
         return ListView.builder(
           itemCount: offers.length,
@@ -191,6 +169,13 @@ class OfferViewState extends State<OfferView>
         );
       },
     );
+  }
+
+  bool isSameDay(DateTime? date1, DateTime? date2) {
+    if (date1 == null || date2 == null) return false;
+    return date1.year == date2.year &&
+        date1.month == date2.month &&
+        date1.day == date2.day;
   }
 
   @override

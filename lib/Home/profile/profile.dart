@@ -59,9 +59,12 @@ class ProfileState extends State<Profile>
     super.build(context);
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFF73AEF5),
+        title: const Text('Profile',
+            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
         elevation: 1,
-        title: const Text('Profile'),
+        centerTitle: true,
+        foregroundColor: Colors.white,
+        backgroundColor: const Color(0xFF73AEF5),
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.settings_power),
@@ -96,51 +99,51 @@ class ProfileState extends State<Profile>
   Widget _buildProfileView() {
     return Column(children: <Widget>[
       _buildUserInfo(),
-      Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Row(
-          children: [
-            const Text(
-              "Language: ",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
-            Expanded(
-              child: DropdownButton<String>(
-                value: selectedLanguage,
-                isExpanded: true,
-                items: languages.map((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(
-                      value,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.w400, fontSize: 15),
-                    ),
-                  );
-                }).toList(),
-                onChanged: (newValue) {
-                  setState(() {
-                    // if (newValue == 'English') {
-                    //   this.setState(() {
-                    //     selectedLanguage = 'English';
-                    //     //icon = "us.png";
-                    //     context.locale = Locale('en', 'US');
-                    //   });
-                    // } else if (newValue == 'French') {
-                    //   this.setState(() {
-                    //     selectedLanguage = 'French';
-                    //     //icon = "fr.png";
-                    //     context.locale = Locale('fr', 'CA');
-                    //   });
-                    // }
-                  });
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
+      // Padding(
+      //   padding: const EdgeInsets.all(8.0),
+      //   child: Row(
+      //     children: [
+      //       const Text(
+      //         "Language: ",
+      //         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+      //       ),
+      //       Expanded(
+      //         child: DropdownButton<String>(
+      //           value: selectedLanguage,
+      //           isExpanded: true,
+      //           items: languages.map((String value) {
+      //             return DropdownMenuItem<String>(
+      //               value: value,
+      //               child: Text(
+      //                 value,
+      //                 overflow: TextOverflow.ellipsis,
+      //                 style: const TextStyle(
+      //                     fontWeight: FontWeight.w400, fontSize: 15),
+      //               ),
+      //             );
+      //           }).toList(),
+      //           onChanged: (newValue) {
+      //             setState(() {
+      //               // if (newValue == 'English') {
+      //               //   this.setState(() {
+      //               //     selectedLanguage = 'English';
+      //               //     //icon = "us.png";
+      //               //     context.locale = Locale('en', 'US');
+      //               //   });
+      //               // } else if (newValue == 'French') {
+      //               //   this.setState(() {
+      //               //     selectedLanguage = 'French';
+      //               //     //icon = "fr.png";
+      //               //     context.locale = Locale('fr', 'CA');
+      //               //   });
+      //               // }
+      //             });
+      //           },
+      //         ),
+      //       ),
+      //     ],
+      //   ),
+      // ),
       _buildUserDetails(),
       Expanded(child: ticketsWidget()),
     ]);
@@ -162,25 +165,46 @@ class ProfileState extends State<Profile>
               physics: const ScrollPhysics(),
               itemCount: snapshot.data?.length,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 1, crossAxisSpacing: 0, mainAxisSpacing: 0),
+                crossAxisCount: 1,
+                crossAxisSpacing: 0,
+                mainAxisSpacing: 0,
+              ),
               itemBuilder: ((context, index) {
-                return GestureDetector(
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 5.0, right: 5.0),
-                    child: OfferItem(
-                      ticket: tickets[index],
-                    ),
-                  ),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: ((context) => OfferDetail(
-                              ticket: tickets[index],
-                            )),
+                return Stack(
+                  children: [
+                    GestureDetector(
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 5.0, right: 5.0),
+                        child: OfferItem(
+                          ticket: tickets[index],
+                        ),
                       ),
-                    );
-                  },
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: ((context) => OfferDetail(
+                                  ticket: tickets[index],
+                                )),
+                          ),
+                        );
+                      },
+                    ),
+                    Positioned(
+                      right: 8,
+                      top: 8,
+                      child: IconButton(
+                        icon: const Icon(Icons.cancel, color: Colors.red),
+                        onPressed: () {
+                          setState(() {
+                            repository
+                                .deleteTicket(tickets[index].ticketid ?? "");
+                            tickets.removeAt(index);
+                          });
+                        },
+                      ),
+                    ),
+                  ],
                 );
               }),
             );

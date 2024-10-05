@@ -65,11 +65,12 @@ class PublishOfferState extends State<PublishOffer>
     return SafeArea(
       child: Scaffold(
           key: key,
-          backgroundColor: const Color(0xFF73AEF5),
           appBar: AppBar(
-            title: const Text('TICKET TO GO'),
+            title: const Text("Create",
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+            elevation: 1,
             centerTitle: true,
-            elevation: 0,
+            foregroundColor: Colors.white,
             backgroundColor: const Color(0xFF73AEF5),
             actions: <Widget>[
               Padding(
@@ -184,6 +185,9 @@ class PublishOfferState extends State<PublishOffer>
           description: descriptionController.text,
           price: priceController.text,
           time: DateTime.now(),
+          ownerName: user.displayName ?? "",
+          ownerPhotoUrl: user.photoUrl ?? "",
+          noOfTickets: int.tryParse(numberOfTicketsController.text) ?? 0,
         );
         _repository.addTicketToDb(ticket).then((value) {
           setState(() {
@@ -249,27 +253,30 @@ class PublishOfferState extends State<PublishOffer>
             }
           }),
           const SizedBox(height: 8),
-          _typeDropDown(),
+          const SizedBox(height: 10.0),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Type",
+                style: kLabelStyle,
+              ),
+              const SizedBox(height: 10.0),
+              _typeDropDown(),
+            ],
+          ),
           const SizedBox(height: 8),
           buildDescriptionTF("Description", descriptionController),
           const SizedBox(height: 8),
-          GestureDetector(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 8, left: 0, right: 0),
-                child: Container(
-                  height: 40.0,
-                  decoration: BoxDecoration(
-                      color: Colors.green,
-                      borderRadius: BorderRadius.circular(4.0),
-                      border: Border.all(color: Colors.grey)),
-                  child: const Center(
-                    child: Text("Save", style: TextStyle(color: Colors.white)),
-                  ),
-                ),
-              ),
-              onTap: () async {
-                saveOffer();
-              }),
+          ElevatedButton(
+            onPressed: () {
+              saveOffer();
+            },
+            style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: const Color(0xFF73AEF5)),
+            child: const Text('Publish'),
+          ),
           const SizedBox(height: 8),
         ],
       ),
@@ -301,11 +308,19 @@ class PublishOfferState extends State<PublishOffer>
         fontWeight: FontWeight.w400,
         color: Colors.white,
       ),
-      decoration: const InputDecoration(
+      decoration: InputDecoration(
         border: InputBorder.none,
-        contentPadding: EdgeInsets.all(14),
+        contentPadding: const EdgeInsets.all(14),
         hintText: "Description here!",
         hintStyle: kHintTextStyle,
+        enabledBorder: OutlineInputBorder(
+          borderSide: const BorderSide(color: Colors.grey),
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: const BorderSide(color: Color(0xFF73AEF5)),
+          borderRadius: BorderRadius.circular(8.0),
+        ),
       ),
     );
   }

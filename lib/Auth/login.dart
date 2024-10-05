@@ -301,7 +301,6 @@ class _LoginState extends State<Login> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: key,
-      backgroundColor: const Color(0xFF73AEF5),
       body: ModalProgressHUD(
         inAsyncCall: _saving,
         child: AnnotatedRegion<SystemUiOverlayStyle>(
@@ -323,7 +322,6 @@ class _LoginState extends State<Login> {
                         Color(0xFF478DE0),
                         Color(0xFF398AE5),
                       ],
-                      stops: [0.1, 0.4, 0.7, 0.9],
                     ),
                   ),
                 ),

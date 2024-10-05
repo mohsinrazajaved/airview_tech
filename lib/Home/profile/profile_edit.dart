@@ -51,9 +51,12 @@ class EditProfileScreenState extends State<EditProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFF73AEF5),
+        title: const Text("Edit Profile",
+            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
         elevation: 1,
-        title: const Text("Edit Profile"),
+        centerTitle: true,
+        foregroundColor: Colors.white,
+        backgroundColor: const Color(0xFF73AEF5),
         leading: GestureDetector(
           child: const Icon(Icons.close, color: Colors.white),
           onTap: () => Navigator.pop(context),
@@ -142,18 +145,18 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 15.0, vertical: 8.0),
-                    child: TextField(
-                      controller: _bioController,
-                      maxLines: 3,
-                      decoration: const InputDecoration(
-                        hintText: 'Bio',
-                        labelText: 'Bio',
-                      ),
-                    ),
-                  ),
+                  // Padding(
+                  //   padding: const EdgeInsets.symmetric(
+                  //       horizontal: 15.0, vertical: 8.0),
+                  //   child: TextField(
+                  //     controller: _bioController,
+                  //     maxLines: 3,
+                  //     decoration: const InputDecoration(
+                  //       hintText: 'Bio',
+                  //       labelText: 'Bio',
+                  //     ),
+                  //   ),
+                  // ),
                   const Divider(),
                   const Padding(
                     padding: EdgeInsets.only(left: 15.0),

@@ -41,7 +41,7 @@ class Ticket {
   Map<String, dynamic> toJson(Ticket ticket) {
     Map<String, dynamic> data = {};
     data['ownerUid'] = ticket.currentUserUid;
-    data['postid'] = ticket.ticketid;
+    data['ticketId'] = ticket.ticketid;
     data['dateTime'] = ticket.dateTime;
     data['title'] = ticket.title;
     data['time'] = ticket.time;
@@ -50,7 +50,7 @@ class Ticket {
     data['country'] = ticket.country;
     data['price'] = ticket.price;
     data['type'] = ticket.type;
-    data['postOwnerName'] = ticket.ownerName;
+    data['ownerName'] = ticket.ownerName;
     data['arrival'] = ticket.arrival;
     data['departure'] = ticket.departure;
     data['goDate'] = ticket.goDate;

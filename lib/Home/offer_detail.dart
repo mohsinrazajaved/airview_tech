@@ -10,17 +10,21 @@ class OfferDetail extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('${ticket.departure} > ${ticket.arrival}'),
+        title: Text('${ticket.departure} > ${ticket.arrival}',
+            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+        centerTitle: true,
+        backgroundColor: const Color(0xFF73AEF5),
+        foregroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('${ticket.departure} > ${ticket.arrival}',
-                style:
-                    const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 4),
+            SellerInfoSection(ticket: ticket),
+            const SizedBox(height: 16),
+            PricingSection(ticket: ticket),
+            const SizedBox(height: 16),
             FlightDetailsSection(ticket: ticket),
             const SizedBox(height: 16),
             const Text('Description',
@@ -31,18 +35,21 @@ class OfferDetail extends StatelessWidget {
               style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 16),
-            SellerInfoSection(ticket: ticket),
-            const SizedBox(height: 16),
-            PricingSection(ticket: ticket),
-            const SizedBox(height: 16),
-            ElevatedButton.icon(
-              onPressed: () {},
-              icon: const Icon(Icons.contact_phone),
-              label: const Text('Contact'),
-              style: ElevatedButton.styleFrom(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                ElevatedButton.icon(
+                  onPressed: () {},
+                  icon: const Icon(Icons.mail),
+                  label: const Text('Contact'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF73AEF5),
+                    foregroundColor: Colors.white,
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -63,17 +70,19 @@ class FlightDetailsSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         InfoRow(
-          label: 'Aéroport de départ',
+          label: const Text('Départ',
+              style: TextStyle(fontSize: 16, color: Colors.black)),
           value: ticket.departure ?? '',
         ),
         InfoRow(
-          label: 'Aéroport d’arrivée',
+          label: const Text('Arrivée',
+              style: TextStyle(fontSize: 16, color: Colors.black)),
           value: ticket.arrival ?? '',
         ),
         InfoRow(
-          label: 'Date',
+          label: const Icon(Icons.date_range, size: 20, color: Colors.grey),
           value:
-              'date départ ${ticket.goDate} - date retour ${ticket.returnDate}',
+              'Date départ ${ticket.goDate} - Date retour ${ticket.returnDate}',
         ),
       ],
     );
@@ -88,7 +97,7 @@ class SellerInfoSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         CircleAvatar(
           radius: 30,
@@ -102,15 +111,6 @@ class SellerInfoSection extends StatelessWidget {
             Text(
               ticket.ownerName ?? 'Benni',
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const Text('Membre depuis 3 mois'),
-            const SizedBox(height: 4),
-            const Row(
-              children: [
-                Icon(Icons.verified, color: Colors.green, size: 16),
-                SizedBox(width: 4),
-                Text('Identité vérifiée'),
-              ],
             ),
             const SizedBox(height: 4),
           ],
@@ -139,15 +139,22 @@ class PricingSection extends StatelessWidget {
             Text(
               '€${ticket.price ?? '100'}',
               style: const TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey,
-                  decoration: TextDecoration.lineThrough),
+                fontSize: 16,
+                color: Colors.grey,
+              ),
             ),
           ],
         ),
-        const Text(
-          'Soit 1.67% d\'économies',
-          style: TextStyle(color: Colors.grey),
+        const SizedBox(
+          height: 10,
+        ),
+        Row(
+          children: [
+            Text(
+              '${ticket.noOfTickets ?? 0} billet(s) disponible(s)',
+              style: const TextStyle(color: Colors.grey),
+            ),
+          ],
         ),
       ],
     );
@@ -155,7 +162,7 @@ class PricingSection extends StatelessWidget {
 }
 
 class InfoRow extends StatelessWidget {
-  final String label;
+  final Widget label;
   final String value;
 
   const InfoRow({Key? key, required this.label, required this.value})
@@ -166,10 +173,11 @@ class InfoRow extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label,
-              style: const TextStyle(fontSize: 16, color: Colors.black)),
+          label,
+          const SizedBox(width: 4),
           Flexible(
               child: Text(value,
                   style: const TextStyle(fontSize: 16, color: Colors.orange))),

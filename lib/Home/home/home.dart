@@ -78,7 +78,7 @@ class HomeState extends State<Home> with AutomaticKeepAliveClientMixin<Home> {
         currentIndex: _currentIndex,
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+            icon: Icon(Icons.airplane_ticket),
             label: "Offers",
           ),
           BottomNavigationBarItem(

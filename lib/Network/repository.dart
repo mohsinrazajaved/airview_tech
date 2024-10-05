@@ -39,8 +39,8 @@ class Repository {
   ) =>
       _firebaseProvider.addTicketToDb(ticket);
 
-  Future<void> deletePost(String postid, String userid) =>
-      _firebaseProvider.deleteTicket(postid, userid);
+  Future<void> deleteTicket(String postid) =>
+      _firebaseProvider.deleteTicket(postid);
 
   Future<AppUser> retrieveUserDetails(User user) =>
       _firebaseProvider.retrieveUserDetails(user);

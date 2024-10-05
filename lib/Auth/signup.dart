@@ -280,16 +280,16 @@ class _SignupState extends State<Signup> {
     bcontext = context;
     return Scaffold(
       key: key,
-      backgroundColor: const Color(0xFF73AEF5),
       appBar: AppBar(
         elevation: 0,
+        centerTitle: true,
         backgroundColor: const Color(0xFF73AEF5),
         title: const Text(
           'Sign Up',
           style: TextStyle(
             color: Colors.white,
             fontFamily: 'OpenSans',
-            fontSize: 30.0,
+            fontSize: 18.0,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -311,7 +311,7 @@ class _SignupState extends State<Signup> {
             child: Builder(
               builder: (context) => (Stack(
                 children: <Widget>[
-                  _bgContainer(),
+                  //_bgContainer(),
                   SizedBox(
                     height: double.infinity,
                     child: SingleChildScrollView(
@@ -370,25 +370,25 @@ class _SignupState extends State<Signup> {
     );
   }
 
-  Container _bgContainer() {
-    return Container(
-      height: double.infinity,
-      width: double.infinity,
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Color(0xFF73AEF5),
-            Color(0xFF61A4F1),
-            Color(0xFF478DE0),
-            Color(0xFF398AE5),
-          ],
-          stops: [0.1, 0.4, 0.7, 0.9],
-        ),
-      ),
-    );
-  }
+  // Container _bgContainer() {
+  //   return Container(
+  //     height: double.infinity,
+  //     width: double.infinity,
+  //     decoration: const BoxDecoration(
+  //       gradient: LinearGradient(
+  //         begin: Alignment.topCenter,
+  //         end: Alignment.bottomCenter,
+  //         colors: [
+  //           Color(0xFF73AEF5),
+  //           Color(0xFF61A4F1),
+  //           Color(0xFF478DE0),
+  //           Color(0xFF398AE5),
+  //         ],
+  //         stops: [0.1, 0.4, 0.7, 0.9],
+  //       ),
+  //     ),
+  //   );
+  // }
 
   @override
   void dispose() {

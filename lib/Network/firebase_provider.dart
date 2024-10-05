@@ -149,7 +149,7 @@ class FirebaseProvider {
     return querySnapshot.docs.where((e) => e["ownerUid"] == userId).toList();
   }
 
-  Future<void> deleteTicket(String postid, String userid) async {
+  Future<void> deleteTicket(String postid) async {
     DocumentReference queryReference =
         _firestore.collection("tickets").doc(postid);
     queryReference.delete();
