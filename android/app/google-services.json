@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "40804076110",
-    "project_id": "bymyticket-6c7f3",
-    "storage_bucket": "bymyticket-6c7f3.appspot.com"
+    "project_number": "584533383971",
+    "project_id": "bymyticket-288e8",
+    "storage_bucket": "bymyticket-288e8.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:40804076110:android:dcc95a1b51a252cdad911f",
+        "mobilesdk_app_id": "1:584533383971:android:4f98098c92b9cee3588a96",
         "android_client_info": {
           "package_name": "com.app.by_my_ticket"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAfyWCuyFkfGU-Dd03jUOJoJtqfKOM8kJI"
+          "current_key": "AIzaSyCXI3iHyVT2t5y4ayWxguo8KexZ-Mjw5QU"
         }
       ],
       "services": {

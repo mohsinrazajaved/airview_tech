@@ -8,9 +8,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../Network/repository.dart';
 
@@ -33,6 +35,7 @@ class ProfileState extends State<Profile>
   List<String> languages = ['English', 'French'];
   final df = DateFormat('dd-MM-yyyy HH:mm');
   String? selectedLanguage;
+  List<Ticket> tickets = [];
 
   @override
   void initState() {
@@ -155,7 +158,7 @@ class ProfileState extends State<Profile>
       builder: ((context, AsyncSnapshot<List<DocumentSnapshot>> snapshot) {
         if (snapshot.hasData) {
           if (snapshot.connectionState == ConnectionState.done) {
-            final tickets = snapshot.data
+            tickets = snapshot.data
                     ?.map((e) =>
                         Ticket.fromJson(e.data() as Map<String, dynamic>))
                     .toList() ??
@@ -196,11 +199,7 @@ class ProfileState extends State<Profile>
                       child: IconButton(
                         icon: const Icon(Icons.cancel, color: Colors.red),
                         onPressed: () {
-                          setState(() {
-                            repository
-                                .deleteTicket(tickets[index].ticketid ?? "");
-                            tickets.removeAt(index);
-                          });
+                          _showDeleteDialog(index);
                         },
                       ),
                     ),
@@ -223,13 +222,42 @@ class ProfileState extends State<Profile>
     );
   }
 
+  Future<void> _showDeleteDialog(int index) async {
+    final bool? confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Ticket'),
+        content: const Text('Are you sure you want to delete this ticket?'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context, false); // Close the dialog
+            },
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context, true); // Confirm delete
+            },
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      repository.deleteTicket(tickets[index].ticketid ?? "");
+      tickets.removeAt(index);
+    }
+  }
+
   Widget _buildUserInfo() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 8.0, top: 20.0),
-          child: Text(_user?.displayName ?? "",
+          child: Text((_user?.displayName ?? "").capitalize(),
               style: const TextStyle(
                   color: Colors.black,
                   fontWeight: FontWeight.w600,
@@ -281,6 +309,36 @@ class ProfileState extends State<Profile>
                       ),
                     );
                     retrieveUserDetails();
+                  },
+                ),
+                GestureDetector(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 8, left: 0, right: 0),
+                    child: Container(
+                      height: 40.0,
+                      decoration: BoxDecoration(
+                          color: Colors.blue,
+                          borderRadius: BorderRadius.circular(4.0),
+                          border: Border.all(color: Colors.grey)),
+                      child: const Center(
+                        child: Text("Contact Us",
+                            style: TextStyle(color: Colors.white)),
+                      ),
+                    ),
+                  ),
+                  onTap: () async {
+                    final Email email = Email(
+                      body: 'Hi',
+                      subject: 'Contact',
+                      recipients: ['Contactus.tickettogo@gmail.com'],
+                      isHTML: false,
+                    );
+
+                    try {
+                      await FlutterEmailSender.send(email);
+                    } catch (error) {
+                      print('Error sending email: $error');
+                    }
                   },
                 ),
                 GestureDetector(
@@ -342,4 +400,10 @@ class ProfileState extends State<Profile>
 
   @override
   bool get wantKeepAlive => true;
+}
+
+extension StringExtension on String {
+  String capitalize() {
+    return "${this[0].toUpperCase()}${this.substring(1).toLowerCase()}";
+  }
 }

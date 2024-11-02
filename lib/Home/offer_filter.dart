@@ -1,12 +1,14 @@
+import 'package:airview_tech/Utilities/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../models/ticket.dart';
 
 class FilterScreen extends StatefulWidget {
-  final List<String?> countries;
-  final List<String?> cities;
-  final List<String?> types;
+  final List<String> countries;
+  final List<String> cities;
+  final List<String> types;
   final Function(
     String? selectedCountry,
     String? selectedCity,
@@ -31,156 +33,73 @@ class _FilterScreenState extends State<FilterScreen> {
   String? selectedCity;
   String? selectedType;
   DateTime? selectedDate;
+  String dateString = 'Select Date';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Filters",
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-        elevation: 1,
-        centerTitle: true,
-        foregroundColor: Colors.white,
-        backgroundColor: const Color(0xFF73AEF5),
-      ),
+      appBar: AppBar(),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            DropdownButtonFormField<String>(
-              value: selectedCountry,
-              decoration: InputDecoration(
-                labelText: 'Country',
-                labelStyle: const TextStyle(
-                  color: Colors.black,
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(color: Colors.blue),
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-              ),
-              items: widget.countries.map((String? country) {
-                return DropdownMenuItem<String>(
-                  value: country,
-                  child: Text(country ?? ""),
-                );
-              }).toList(),
-              onChanged: (newValue) {
-                setState(() {
-                  selectedCountry = newValue;
-                });
-              },
+            Text(
+              "Filters".tr,
+              style: Theme.of(context)
+                  .textTheme
+                  .headlineSmall!
+                  .copyWith(fontWeight: FontWeight.bold),
             ),
+            SizedBox(height: MediaQuery.of(context).size.width * 0.05),
+            buidDropDownField(selectedCountry, widget.countries, (value) {
+              selectedCountry = value as String;
+              setState(() {});
+            }, hint: "Country".tr),
             const SizedBox(height: 16),
-            DropdownButtonFormField<String>(
-              value: selectedCity,
-              decoration: InputDecoration(
-                labelText: 'City',
-                labelStyle: const TextStyle(
-                  color: Colors.black,
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(color: Colors.blue),
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-              ),
-              items: widget.cities.map((String? city) {
-                return DropdownMenuItem<String>(
-                  value: city,
-                  child: Text(city ?? ""),
-                );
-              }).toList(),
-              onChanged: (newValue) {
-                setState(() {
-                  selectedCity = newValue;
-                });
-              },
-            ),
+            buidDropDownField(selectedCity, widget.cities, (value) {
+              selectedCity = value as String;
+              setState(() {});
+            }, hint: "City".tr),
             const SizedBox(height: 16),
-            DropdownButtonFormField<String>(
-              value: selectedType,
-              decoration: InputDecoration(
-                labelText: 'Type',
-                labelStyle: const TextStyle(
-                  color: Colors.black,
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(color: Colors.blue),
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-              ),
-              items: widget.types.map((String? type) {
-                return DropdownMenuItem<String>(
-                  value: type,
-                  child: Text(type ?? ""),
-                );
-              }).toList(),
-              onChanged: (newValue) {
-                setState(() {
-                  selectedType = newValue;
-                });
-              },
-            ),
+            buidDropDownField(selectedType, widget.types, (value) {
+              selectedType = value as String;
+              setState(() {});
+            }, hint: "Type".tr),
             const SizedBox(height: 16),
-            InkWell(
-              onTap: () => _selectDate(context),
-              child: InputDecorator(
-                decoration: InputDecoration(
-                  labelText: 'Date',
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Colors.grey),
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Color(0xFF73AEF5)),
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                ),
-                child: Text(selectedDate == null
-                    ? 'Select Date'
-                    : DateFormat('yyyy-MM-dd').format(selectedDate!)),
-              ),
-            ),
+            buildDatePicker(dateString, () async {
+              final DateTime? picked = await showDatePicker(
+                context: context,
+                initialDate: DateTime.now(),
+                firstDate: DateTime(2000),
+                lastDate: DateTime(2101),
+              );
+              if (picked != null && picked != selectedDate) {
+                setState(() {
+                  selectedDate = picked;
+                  dateString = selectedDate == null
+                      ? 'Select Date'
+                      : DateFormat('yyyy-MM-dd').format(selectedDate!);
+                });
+              }
+            }),
             const SizedBox(height: 24),
             ElevatedButton(
               onPressed: () {
                 _applyFilters();
               },
               style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  backgroundColor: const Color(0xFF73AEF5)),
-              child: const Text('Apply'),
+                elevation: 0,
+                backgroundColor: const Color(0xFF00BF6D),
+                foregroundColor: Colors.white,
+                minimumSize: const Size(double.infinity, 48),
+                shape: const StadiumBorder(),
+              ),
+              child: Text("Apply".tr),
             ),
           ],
         ),
       ),
     );
-  }
-
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
-    );
-    if (picked != null && picked != selectedDate) {
-      setState(() {
-        selectedDate = picked;
-      });
-    }
   }
 
   _applyFilters() {

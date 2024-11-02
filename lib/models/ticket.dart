@@ -17,12 +17,14 @@ class Ticket {
   String? ownerName;
   String? ownerPhotoUrl;
   int? noOfTickets;
+  String? sellerEmail;
   DateTime? time;
 
   Ticket({
     this.currentUserUid,
     this.type,
     this.dateTime,
+    this.sellerEmail,
     this.time,
     this.title,
     this.description,
@@ -56,6 +58,7 @@ class Ticket {
     data['goDate'] = ticket.goDate;
     data['returnDate'] = ticket.returnDate;
     data['noOfTickets'] = ticket.noOfTickets;
+    data['sellerEmail'] = ticket.sellerEmail;
 
     return data;
   }
@@ -77,5 +80,6 @@ class Ticket {
     goDate = mapData['goDate'];
     returnDate = mapData['returnDate'];
     noOfTickets = mapData['noOfTickets'];
+    sellerEmail = mapData['sellerEmail'];
   }
 }

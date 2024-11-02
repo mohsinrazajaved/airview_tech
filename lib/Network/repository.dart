@@ -47,6 +47,9 @@ class Repository {
 
   Future<bool> removeAccount() => _firebaseProvider.removeAccount();
 
+  Future<List<DocumentSnapshot>> retrieveAllTickets() =>
+      _firebaseProvider.retrieveAllTickets();
+
   Future<List<DocumentSnapshot>> retrieveTickets(String type) =>
       _firebaseProvider.retrieveTickets(type);
 

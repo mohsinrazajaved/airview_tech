@@ -26,10 +26,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for ios - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return ios;
       case TargetPlatform.macOS:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for macos - '
@@ -53,11 +50,20 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAfyWCuyFkfGU-Dd03jUOJoJtqfKOM8kJI',
-    appId: '1:40804076110:android:dcc95a1b51a252cdad911f',
-    messagingSenderId: '40804076110',
-    projectId: 'bymyticket-6c7f3',
-    storageBucket: 'bymyticket-6c7f3.appspot.com',
+    apiKey: 'AIzaSyCXI3iHyVT2t5y4ayWxguo8KexZ-Mjw5QU',
+    appId: '1:584533383971:android:4f98098c92b9cee3588a96',
+    messagingSenderId: '584533383971',
+    projectId: 'bymyticket-288e8',
+    storageBucket: 'bymyticket-288e8.appspot.com',
+  );
+
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyAJPE3Z6t_krGvNTfjV60Rg_cYSqSxm_2g',
+    appId: '1:584533383971:ios:742e0aee159a517d588a96',
+    messagingSenderId: '584533383971',
+    projectId: 'bymyticket-288e8',
+    storageBucket: 'bymyticket-288e8.appspot.com',
+    iosBundleId: 'com.app.bymyticket',
   );
 
 }

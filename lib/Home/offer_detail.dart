@@ -1,5 +1,7 @@
 import 'package:airview_tech/models/ticket.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_email_sender/flutter_email_sender.dart';
+import 'package:get/get.dart';
 
 class OfferDetail extends StatelessWidget {
   final Ticket ticket;
@@ -10,24 +12,37 @@ class OfferDetail extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('${ticket.departure} > ${ticket.arrival}',
-            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-        centerTitle: true,
-        backgroundColor: const Color(0xFF73AEF5),
-        foregroundColor: Colors.white,
-      ),
+          // title: Text('${ticket.departure} > ${ticket.arrival}',
+          //     style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+          // centerTitle: true,
+          // backgroundColor: const Color(0xFF73AEF5),
+          // foregroundColor: Colors.white,
+          ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  '${ticket.departure} > ${ticket.arrival}',
+                  style: Theme.of(context)
+                      .textTheme
+                      .headlineSmall!
+                      .copyWith(fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            SizedBox(height: MediaQuery.of(context).size.width * 0.01),
             SellerInfoSection(ticket: ticket),
             const SizedBox(height: 16),
             PricingSection(ticket: ticket),
             const SizedBox(height: 16),
             FlightDetailsSection(ticket: ticket),
             const SizedBox(height: 16),
-            const Text('Description',
+            Text("Description".tr,
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             Text(
@@ -39,11 +54,24 @@ class OfferDetail extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 ElevatedButton.icon(
-                  onPressed: () {},
+                  onPressed: () async {
+                    final Email email = Email(
+                      body: 'Hi',
+                      subject: 'Contact',
+                      recipients: [ticket.sellerEmail ?? ""],
+                      isHTML: false,
+                    );
+
+                    try {
+                      await FlutterEmailSender.send(email);
+                    } catch (error) {
+                      print('Error sending email: $error');
+                    }
+                  },
                   icon: const Icon(Icons.mail),
-                  label: const Text('Contact'),
+                  label: Text("Contact".tr),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF73AEF5),
+                    backgroundColor: const Color(0xFF00BF6D),
                     foregroundColor: Colors.white,
                     padding:
                         const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
@@ -70,19 +98,21 @@ class FlightDetailsSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         InfoRow(
-          label: const Text('Départ',
+          label: Text("Arrival".tr,
               style: TextStyle(fontSize: 16, color: Colors.black)),
           value: ticket.departure ?? '',
         ),
         InfoRow(
-          label: const Text('Arrivée',
+          label: Text("Depart".tr,
               style: TextStyle(fontSize: 16, color: Colors.black)),
           value: ticket.arrival ?? '',
         ),
         InfoRow(
           label: const Icon(Icons.date_range, size: 20, color: Colors.grey),
-          value:
-              'Date départ ${ticket.goDate} - Date retour ${ticket.returnDate}',
+          value: "Date depart".tr +
+              "${ticket.goDate} - " +
+              "Date arrival".tr +
+              "${ticket.returnDate}",
         ),
       ],
     );
@@ -99,17 +129,11 @@ class SellerInfoSection extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        CircleAvatar(
-          radius: 30,
-          backgroundImage: NetworkImage(ticket.ownerPhotoUrl ?? ''),
-          backgroundColor: Colors.grey[200],
-        ),
-        const SizedBox(width: 16),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              ticket.ownerName ?? 'Benni',
+              ticket.ownerName ?? "",
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 4),
@@ -133,7 +157,7 @@ class PricingSection extends StatelessWidget {
         Row(
           children: [
             const Text(
-              'Prix d\'achat: ',
+              "Prix d achat: ",
               style: TextStyle(fontSize: 16, color: Colors.grey),
             ),
             Text(
@@ -180,7 +204,10 @@ class InfoRow extends StatelessWidget {
           const SizedBox(width: 4),
           Flexible(
               child: Text(value,
-                  style: const TextStyle(fontSize: 16, color: Colors.orange))),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: const Color(0xFF00BF6D),
+                  ))),
         ],
       ),
     );

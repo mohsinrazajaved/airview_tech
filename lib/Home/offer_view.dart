@@ -9,6 +9,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
 class OfferView extends StatefulWidget {
@@ -51,63 +52,64 @@ class OfferViewState extends State<OfferView>
         _user = user;
       });
     }
-    _future = _repository.retrieveTickets(_user?.uid ?? "");
+    _future = _repository.retrieveAllTickets();
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-      key: key,
-      appBar: AppBar(
-        title: const Text("Tickets",
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-        elevation: 1,
-        centerTitle: true,
-        foregroundColor: Colors.white,
-        backgroundColor: const Color(0xFF73AEF5),
-        actions: [
-          IconButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => FilterScreen(
-                        countries:
-                            offers.map((e) => e?.country).toSet().toList(),
-                        types: offers.map((e) => e?.type).toSet().toList(),
-                        cities: offers.map((e) => e?.city).toSet().toList(),
-                        callback: (country, city, type, data) {
-                          setState(() {
-                            selectedCountry = country;
-                            selectedCity = city;
-                            selectedType = type;
-                            selectedDate = data;
-                          });
-                        }),
-                  ),
-                );
-              },
-              icon: const Icon(Icons.filter_alt))
-        ],
-      ),
-      body: ModalProgressHUD(
-        inAsyncCall: saving,
-        child: AnnotatedRegion<SystemUiOverlayStyle>(
-          value: SystemUiOverlayStyle.light,
-          child: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
+        key: key,
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: ModalProgressHUD(
+              inAsyncCall: saving,
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.05),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Tickets".tr,
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineSmall!
+                            .copyWith(fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.02),
                   Expanded(child: _buildTicketList()),
                 ],
-              ),
-            ),
-          ),
+              )),
         ),
-      ),
-    );
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: const Color(0xFF00BF6D),
+          foregroundColor: Colors.white,
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => FilterScreen(
+                    countries:
+                        offers.map((e) => e?.country ?? "").toSet().toList(),
+                    types: offers.map((e) => e?.type ?? "").toSet().toList(),
+                    cities: offers.map((e) => e?.city ?? "").toSet().toList(),
+                    callback: (country, city, type, data) {
+                      setState(() {
+                        selectedCountry = country;
+                        selectedCity = city;
+                        selectedType = type;
+                        selectedDate = data;
+                      });
+                    }),
+              ),
+            );
+          },
+          child: const Icon(Icons.filter_alt),
+        ));
   }
 
   Widget _buildTicketList() {
@@ -118,7 +120,7 @@ class OfferViewState extends State<OfferView>
           return const Center(child: CircularProgressIndicator());
         }
         if (snapshot.hasError || snapshot.data == null) {
-          return const Center(child: Text('No Tickets Found'));
+          return Center(child: Text("No Tickets Found".tr));
         }
 
         offers = snapshot.data!
@@ -144,28 +146,32 @@ class OfferViewState extends State<OfferView>
         }
 
         if (offers.isEmpty) {
-          return const Center(child: Text('No Tickets Found'));
+          return Center(child: Text("No Tickets Found".tr));
         }
 
-        return ListView.builder(
-          itemCount: offers.length,
-          itemBuilder: (context, index) {
-            return GestureDetector(
-              onTap: () {
-                if (currentUser == null) {
-                  Widgets.showInSnackBar("Please Signup/Login", key);
-                } else {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => OfferDetail(ticket: offers[index]!),
-                    ),
-                  );
-                }
-              },
-              child: OfferItem(ticket: offers[index]!),
-            );
-          },
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ListView.builder(
+            itemCount: offers.length,
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                onTap: () {
+                  if (currentUser == null) {
+                    Widgets.showInSnackBar("Please Signup/Login".tr, key);
+                  } else {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            OfferDetail(ticket: offers[index]!),
+                      ),
+                    );
+                  }
+                },
+                child: OfferItem(ticket: offers[index]!),
+              );
+            },
+          ),
         );
       },
     );

@@ -9,6 +9,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter  
   firebase_core:
   firebase_auth:
   firebase_storage:
@@ -22,13 +24,18 @@ dependencies:
   intl:
   modal_progress_hud_nsn:
   url_launcher:
+  flutter_email_sender:
   shared_preferences:
   webview_flutter:
   carousel_slider:
   flutter_holo_date_picker:
-  flutter_localization:
   google_mobile_ads:
   cupertino_icons: ^1.0.2
+  flutter_svg:
+  ticket_widget:
+  get:
+  flutter_launcher_icons:
+  flutter_native_splash:
 
 dev_dependencies:
   flutter_test:
@@ -36,18 +43,21 @@ dev_dependencies:
 
   flutter_lints: ^2.0.0
 
+flutter_native_splash:
+  color: "#42a5f5"
+  image: "assets/logos/logo.png"
+
 flutter:
 
   uses-material-design: true
 
   assets:
+   - assets/
    - assets/logos/facebook.jpg
    - assets/logos/google.jpg
    - assets/logos/sfinal.png
    - assets/logos/terms.png
    - assets/no_image.png 
-   - assets/locales/
-
 
   fonts:
     - family: OpenSans

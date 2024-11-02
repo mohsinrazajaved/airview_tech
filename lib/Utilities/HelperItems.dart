@@ -14,6 +14,8 @@ class HelperItems {
     return actualPercentage;
   }
 
+  static String selectedLang = 'English';
+
   static double costCalculate(double actualCost, double budgetCost) {
     double costPercentage;
     costPercentage = ((actualCost / budgetCost) * 100);

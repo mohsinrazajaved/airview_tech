@@ -1,8 +1,10 @@
 import 'package:airview_tech/Home/AdHelper.dart';
 import 'package:airview_tech/Home/offer_view.dart';
+import 'package:airview_tech/Home/profile/new_profile.dart';
 import 'package:airview_tech/Home/profile/profile.dart';
 import 'package:airview_tech/Home/publish_offer.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class Home extends StatefulWidget {
@@ -47,7 +49,7 @@ class HomeState extends State<Home> with AutomaticKeepAliveClientMixin<Home> {
   final List<Widget> _children = const [
     OfferView(),
     PublishOffer(),
-    Profile(),
+    ProfileScreen(),
   ];
 
   Widget showAdd() {
@@ -76,18 +78,18 @@ class HomeState extends State<Home> with AutomaticKeepAliveClientMixin<Home> {
         type: BottomNavigationBarType.fixed,
         onTap: onTabTapped,
         currentIndex: _currentIndex,
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.airplane_ticket),
-            label: "Offers",
+            icon: Icon(Icons.local_offer),
+            label: "Offers".tr,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.add_circle_outline),
-            label: "Tickets",
+            label: "Add".tr,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
-            label: "Profile",
+            label: "Profile".tr,
           ),
         ],
       ),

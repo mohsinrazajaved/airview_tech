@@ -1,11 +1,10 @@
 import 'package:airview_tech/Network/repository.dart';
 import 'package:airview_tech/Utilities/HelperItems.dart';
-import 'package:airview_tech/Utilities/constants.dart';
 import 'package:airview_tech/Utilities/widgets.dart';
 import 'package:airview_tech/models/ticket.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
@@ -34,16 +33,16 @@ class PublishOfferState extends State<PublishOffer>
   DateTime? goDate;
   DateTime? returnDate;
   final key = GlobalKey<ScaffoldState>();
+  final _formKey = GlobalKey<FormState>();
 
   final _repository = Repository();
-  String godateString = "Select";
-  String returndateString = "Select";
+  String godateString = "Go Date";
+  String returndateString = "Return Date";
   String selectedTicktType = "bus";
   List<String> types = ["bus", "train", "plane"];
   User? user;
 
   final df = DateFormat('dd-MM-yyyy HH:mm');
-  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -62,40 +61,116 @@ class PublishOfferState extends State<PublishOffer>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return SafeArea(
-      child: Scaffold(
-          key: key,
-          appBar: AppBar(
-            title: const Text("Create",
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-            elevation: 1,
-            centerTitle: true,
-            foregroundColor: Colors.white,
-            backgroundColor: const Color(0xFF73AEF5),
-            actions: <Widget>[
-              Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: GestureDetector(
-                    onTap: () {
-                      clearControllers();
-                    },
-                    child: const Text("Clear"),
-                  )),
-            ],
-          ),
-          body: ModalProgressHUD(
-            inAsyncCall: _saving,
-            child: AnnotatedRegion<SystemUiOverlayStyle>(
-              value: SystemUiOverlayStyle.light,
-              child: GestureDetector(
-                onTap: () => FocusScope.of(context).unfocus(),
-                child: SingleChildScrollView(
-                  controller: _scrollController,
-                  child: _buildLoaded(context),
+    return Scaffold(
+      key: key,
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: ModalProgressHUD(
+          inAsyncCall: _saving,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(height: constraints.maxHeight * 0.05),
+                    Text(
+                      "Create Ticket".tr,
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineSmall!
+                          .copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: constraints.maxHeight * 0.05),
+                    Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          buildTF(hint: "Title".tr, titleController),
+                          buildTF(hint: "Departure".tr, depatureController),
+                          buildTF(hint: "Arrival".tr, arrivalController),
+                          buildTF(hint: "City".tr, cityController),
+                          buildTF(hint: "Country".tr, countryController),
+                          buildTF(hint: "Price".tr, priceController),
+                          buildTF(
+                              hint: "No of Tickets", numberOfTicketsController),
+                          buildDatePicker(godateString, () async {
+                            final DateTime? picked = await showDatePicker(
+                              context: context,
+                              initialDate: DateTime.now(),
+                              firstDate: DateTime(2000),
+                              lastDate: DateTime(2101),
+                              helpText: "Select Date".tr,
+                            );
+
+                            if (picked != null) {
+                              setState(() {
+                                goDate = picked;
+                                godateString =
+                                    HelperItems.dateToStringWithFormat(
+                                        "MM/dd/yyyy", picked);
+                              });
+                            }
+                          }),
+                          const SizedBox(height: 10),
+                          buildDatePicker(returndateString, () async {
+                            final DateTime? picked = await showDatePicker(
+                              context: context,
+                              initialDate: DateTime.now(),
+                              firstDate: DateTime(2000),
+                              lastDate: DateTime(2101),
+                              helpText: "Select Date",
+                            );
+
+                            if (picked != null) {
+                              setState(() {
+                                returnDate = picked;
+                                returndateString =
+                                    HelperItems.dateToStringWithFormat(
+                                        "MM/dd/yyyy", picked);
+                              });
+                            }
+                          }),
+                          const SizedBox(height: 10),
+                          buidDropDownField(selectedTicktType, types, (value) {
+                            selectedTicktType = value as String;
+                            setState(() {});
+                          }, hint: "Type".tr),
+                          const SizedBox(height: 10),
+                          buildDescriptionTF(
+                              "Description".tr, descriptionController),
+                          const SizedBox(height: 10),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 16.0),
+                            child: ElevatedButton(
+                              onPressed: () {
+                                if (_formKey.currentState!.validate()) {
+                                  _formKey.currentState!.save();
+                                  saveOffer();
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                elevation: 0,
+                                backgroundColor: const Color(0xFF00BF6D),
+                                foregroundColor: Colors.white,
+                                minimumSize: const Size(double.infinity, 48),
+                                shape: const StadiumBorder(),
+                              ),
+                              child: Text("Save".tr),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ),
-          )),
+              );
+            },
+          ),
+        ),
+      ),
     );
   }
 
@@ -104,64 +179,16 @@ class PublishOfferState extends State<PublishOffer>
       _saving = true;
     });
 
-    if (titleController.text.isEmpty) {
-      Widgets.showInSnackBar("Please enter title", key);
-      setState(() {
-        _saving = false;
-      });
-      return;
-    }
-
-    if (cityController.text.isEmpty) {
-      Widgets.showInSnackBar("Please enter departure", key);
-      setState(() {
-        _saving = false;
-      });
-      return;
-    }
-
-    if (cityController.text.isEmpty) {
-      Widgets.showInSnackBar("Please enter arrival", key);
-      setState(() {
-        _saving = false;
-      });
-      return;
-    }
-
     if (goDate == null) {
-      Widgets.showInSnackBar("Please select go date", key);
+      Widgets.showInSnackBar("Please select go date".tr, key);
       setState(() {
         _saving = false;
       });
       return;
     }
 
-    if (goDate == null) {
-      Widgets.showInSnackBar("Please select return date", key);
-      setState(() {
-        _saving = false;
-      });
-      return;
-    }
-
-    if (cityController.text.isEmpty) {
-      Widgets.showInSnackBar("Please enter city", key);
-      setState(() {
-        _saving = false;
-      });
-      return;
-    }
-
-    if (countryController.text.isEmpty) {
-      Widgets.showInSnackBar("Please enter country", key);
-      setState(() {
-        _saving = false;
-      });
-      return;
-    }
-
-    if (priceController.text.isEmpty) {
-      Widgets.showInSnackBar("Please enter price", key);
+    if (returnDate == null) {
+      Widgets.showInSnackBar("Please select return date".tr, key);
       setState(() {
         _saving = false;
       });
@@ -185,6 +212,7 @@ class PublishOfferState extends State<PublishOffer>
           description: descriptionController.text,
           price: priceController.text,
           time: DateTime.now(),
+          sellerEmail: user.email ?? "",
           ownerName: user.displayName ?? "",
           ownerPhotoUrl: user.photoUrl ?? "",
           noOfTickets: int.tryParse(numberOfTicketsController.text) ?? 0,
@@ -206,123 +234,6 @@ class PublishOfferState extends State<PublishOffer>
       });
       Widgets.showInSnackBar("Current User is null", key);
     }
-  }
-
-  Widget _buildLoaded(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          buildTF("Title", titleController),
-          buildTF("Departure", depatureController),
-          buildTF("Arrival", arrivalController),
-          buildTF("City", cityController),
-          buildTF("Country", countryController),
-          buildTF("Price", priceController),
-          buildTF("No of Tickets", numberOfTicketsController),
-          buildDatePicker("Go Date", godateString, () async {
-            final DateTime? picked = await showDatePicker(
-              context: context,
-              initialDate: DateTime.now(),
-              firstDate: DateTime(2000),
-              lastDate: DateTime(2101),
-              helpText: "Select Date",
-            );
-
-            if (picked != null) {
-              goDate = picked;
-              godateString =
-                  HelperItems.dateToStringWithFormat("MM/dd/yyyy", picked);
-            }
-          }),
-          const SizedBox(height: 8),
-          buildDatePicker("Return Date", returndateString, () async {
-            final DateTime? picked = await showDatePicker(
-              context: context,
-              initialDate: DateTime.now(),
-              firstDate: DateTime(2000),
-              lastDate: DateTime(2101),
-              helpText: "Select Date",
-            );
-
-            if (picked != null) {
-              returnDate = picked;
-              returndateString =
-                  HelperItems.dateToStringWithFormat("MM/dd/yyyy", picked);
-            }
-          }),
-          const SizedBox(height: 8),
-          const SizedBox(height: 10.0),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                "Type",
-                style: kLabelStyle,
-              ),
-              const SizedBox(height: 10.0),
-              _typeDropDown(),
-            ],
-          ),
-          const SizedBox(height: 8),
-          buildDescriptionTF("Description", descriptionController),
-          const SizedBox(height: 8),
-          ElevatedButton(
-            onPressed: () {
-              saveOffer();
-            },
-            style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white,
-                backgroundColor: const Color(0xFF73AEF5)),
-            child: const Text('Publish'),
-          ),
-          const SizedBox(height: 8),
-        ],
-      ),
-    );
-  }
-
-  DropdownButtonFormField<String> _typeDropDown() {
-    return DropdownButtonFormField(
-      value: selectedTicktType,
-      items: types
-          .map((e) => DropdownMenuItem(
-                value: e,
-                child: Text(
-                  e,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    color: Colors.black,
-                  ),
-                ),
-              ))
-          .toList(),
-      onChanged: (val) {
-        selectedTicktType = val as String;
-        setState(() {});
-      },
-      style: const TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.w400,
-        color: Colors.white,
-      ),
-      decoration: InputDecoration(
-        border: InputBorder.none,
-        contentPadding: const EdgeInsets.all(14),
-        hintText: "Description here!",
-        hintStyle: kHintTextStyle,
-        enabledBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: Colors.grey),
-          borderRadius: BorderRadius.circular(8.0),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: Color(0xFF73AEF5)),
-          borderRadius: BorderRadius.circular(8.0),
-        ),
-      ),
-    );
   }
 
   clearControllers() {

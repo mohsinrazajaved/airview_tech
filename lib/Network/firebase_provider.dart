@@ -144,6 +144,11 @@ class FirebaseProvider {
     return Future.value(true);
   }
 
+  Future<List<DocumentSnapshot>> retrieveAllTickets() async {
+    QuerySnapshot? querySnapshot = await _firestore.collection("tickets").get();
+    return querySnapshot.docs;
+  }
+
   Future<List<DocumentSnapshot>> retrieveTickets(String userId) async {
     QuerySnapshot? querySnapshot = await _firestore.collection("tickets").get();
     return querySnapshot.docs.where((e) => e["ownerUid"] == userId).toList();
