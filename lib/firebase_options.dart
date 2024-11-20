@@ -51,10 +51,10 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyCXI3iHyVT2t5y4ayWxguo8KexZ-Mjw5QU',
-    appId: '1:584533383971:android:4f98098c92b9cee3588a96',
+    appId: '1:584533383971:android:32fecc655a9c892e588a96',
     messagingSenderId: '584533383971',
     projectId: 'bymyticket-288e8',
-    storageBucket: 'bymyticket-288e8.appspot.com',
+    storageBucket: 'bymyticket-288e8.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
@@ -62,7 +62,7 @@ class DefaultFirebaseOptions {
     appId: '1:584533383971:ios:742e0aee159a517d588a96',
     messagingSenderId: '584533383971',
     projectId: 'bymyticket-288e8',
-    storageBucket: 'bymyticket-288e8.appspot.com',
+    storageBucket: 'bymyticket-288e8.firebasestorage.app',
     iosBundleId: 'com.app.bymyticket',
   );
 

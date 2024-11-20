@@ -94,4 +94,5 @@ const Map<String, String> frCA = {
   "No of Tickets": "Nombre de billets",
   "Go Date": "Date de départ",
   "Return Date": "Date de retour",
+  "ticket": "billet(s) disponible(s)",
 };

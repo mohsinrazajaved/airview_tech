@@ -58,7 +58,7 @@ class OfferItem extends StatelessWidget {
               const SizedBox(width: 4),
               Flexible(
                 child: Text(
-                  '${"Date depart".tr} ${ticket.goDate} - ${"Date arrival".tr} ${ticket.returnDate}',
+                  '${"Go Date".tr} ${ticket.goDate} - ${"Return Date".tr} ${ticket.returnDate}',
                   style: const TextStyle(
                       color: Colors.white,
                       textBaseline: TextBaseline.alphabetic),
@@ -94,7 +94,7 @@ class OfferItem extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                '${ticket.noOfTickets ?? 0} billet(s) disponible(s)',
+                '${ticket.noOfTickets ?? 0} ${"ticket".tr}',
                 style: const TextStyle(
                   color: Colors.white,
                 ),

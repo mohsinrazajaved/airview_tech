@@ -2,14 +2,14 @@
   "project_info": {
     "project_number": "584533383971",
     "project_id": "bymyticket-288e8",
-    "storage_bucket": "bymyticket-288e8.appspot.com"
+    "storage_bucket": "bymyticket-288e8.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:584533383971:android:4f98098c92b9cee3588a96",
+        "mobilesdk_app_id": "1:584533383971:android:32fecc655a9c892e588a96",
         "android_client_info": {
-          "package_name": "com.app.by_my_ticket"
+          "package_name": "com.jamelapp.by_my_ticket"
         }
       },
       "oauth_client": [],

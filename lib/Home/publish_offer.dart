@@ -36,8 +36,8 @@ class PublishOfferState extends State<PublishOffer>
   final _formKey = GlobalKey<FormState>();
 
   final _repository = Repository();
-  String godateString = "Go Date";
-  String returndateString = "Return Date";
+  String godateString = "Go Date".tr;
+  String returndateString = "Return Date".tr;
   String selectedTicktType = "bus";
   List<String> types = ["bus", "train", "plane"];
   User? user;

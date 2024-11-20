@@ -93,4 +93,5 @@ const Map<String, String> enUS = {
   "No of Tickets": "No of Tickets",
   "Go Date": "Go Date",
   "Return Date": "Return Date",
+  "ticket": "ticket",
 };
